@@ -30,8 +30,8 @@ model BarbershopService {
   description  String
   imageUrl     String
   barbershopId String
-  Barbershop   Barbershop @relation(fields: [barbershopId], references: [id])
-  price        Int
+  barbershop   Barbershop @relation(fields: [barbershopId], references: [id])
+  priceInCents Int
 }
 
 model Booking {
