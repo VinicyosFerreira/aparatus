@@ -1,16 +1,16 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
 import { actionClient } from "@/lib/safe-action";
-import { returnValidationErrors } from "next-safe-action";
+import { prisma } from "@/lib/prisma";
 import z from "zod";
-import { startOfDay, endOfDay, format } from "date-fns";
-import { headers } from "next/headers";
+import { endOfDay, format, startOfDay } from "date-fns";
 import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { returnValidationErrors } from "next-safe-action";
 
 const inputSchema = z.object({
   barbershopId: z.string(),
-  date: z.coerce.date(),
+  date: z.date(),
 });
 
 const TIME_SLOTS = [
@@ -41,13 +41,11 @@ export const getDateAvailableTimeSlots = actionClient
     const session = await auth.api.getSession({
       headers: await headers(),
     });
-
     if (!session?.user) {
       returnValidationErrors(inputSchema, {
-        _errors: ["Usuário não autenticado"],
+        _errors: ["Unauthorized"],
       });
     }
-
     const bookings = await prisma.booking.findMany({
       where: {
         barbershopId,
@@ -57,14 +55,16 @@ export const getDateAvailableTimeSlots = actionClient
         },
       },
     });
-
     const occupiedSlots = bookings.map((booking) =>
       format(booking.date, "HH:mm"),
     );
-
-    const availbleTimeSlots = TIME_SLOTS.filter((timeSlot) => {
-      return !occupiedSlots.includes(timeSlot);
-    });
-
-    return availbleTimeSlots;
+    const availableTimeSlots = TIME_SLOTS.filter(
+      (slot) => !occupiedSlots.includes(slot),
+    );
+    return availableTimeSlots;
   });
+
+//   => ["10:00", "11:00"]
+
+// Toda barbearia vai ter horários das 09h às 18h.
+// Todo serviço vai ocupar 30 minutos.

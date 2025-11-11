@@ -28,7 +28,7 @@ interface ServiceItemProps {
   };
 }
 
-const ServiceItem = ({ service }: ServiceItemProps) => {
+export function ServiceItem({ service }: ServiceItemProps) {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTime, setSelectedTime] = useState<string | undefined>();
   const { executeAsync, isPending } = useAction(createBooking);
@@ -178,7 +178,7 @@ const ServiceItem = ({ service }: ServiceItemProps) => {
             <>
               <Separator />
 
-              <div className="flex gap-3 min-h-max overflow-x-auto px-5 [&::-webkit-scrollbar]:hidden">
+              <div className="flex gap-2 min-h-max overflow-x-auto px-5 [&::-webkit-scrollbar]:hidden">
                 {availableTimeSlots?.data?.map((time) => (
                   <Button
                     key={time}
@@ -238,6 +238,4 @@ const ServiceItem = ({ service }: ServiceItemProps) => {
       </SheetContent>
     </Sheet>
   );
-};
-
-export default ServiceItem;
+}

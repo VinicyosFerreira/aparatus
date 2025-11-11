@@ -39,17 +39,19 @@ export const POST = async (request: Request) => {
     );
 
     // Extract chargeId from payment_intent
-    const paymentIntent = expandedSession.payment_intent as Stripe.PaymentIntent;
+    const paymentIntent =
+      expandedSession.payment_intent as Stripe.PaymentIntent;
     const chargeId =
       typeof paymentIntent?.latest_charge === "string"
         ? paymentIntent.latest_charge
         : paymentIntent?.latest_charge?.id;
 
+    // Create booking
     await prisma.booking.create({
       data: {
-        barbershopId,
-        serviceId,
         date,
+        serviceId,
+        barbershopId,
         userId,
         stripeChargeId: chargeId || null,
       },
