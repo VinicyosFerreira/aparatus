@@ -2,8 +2,8 @@ import Image from "next/image";
 import Header from "./_components/header";
 import SearchInput from "./_components/search-input";
 import banner from "../public/banner.png";
-import BookingItem from "./_components/booking-item";
 import BarbershopItem from "./_components/barbershop-item";
+import QuickSearchButtons from "./_components/quick-search-buttons";
 import { prisma } from "../lib/prisma";
 import Footer from "./_components/footer";
 import {
@@ -31,6 +31,7 @@ export default async function Home() {
       <Header />
       <PageContainer>
         <SearchInput />
+        <QuickSearchButtons />
         <Image
           src={banner}
           sizes="100vw"
