@@ -37,7 +37,7 @@ export default async function Home() {
           alt="Agende agora"
           className="h-auto w-full"
         />
-        <PageSection>
+        {/* <PageSection>
           <PageSectionTitle>Agendamentos</PageSectionTitle>
           <BookingItem
             serviceName="Corte de cabelo"
@@ -45,7 +45,7 @@ export default async function Home() {
             barbershopImage="https://utfs.io/f/5832df58-cfd7-4b3f-b102-42b7e150ced2-16r.png"
             date={new Date()}
           />
-        </PageSection>
+        </PageSection> */}
 
         <PageSection>
           <PageSectionTitle>Recomendadas</PageSectionTitle>

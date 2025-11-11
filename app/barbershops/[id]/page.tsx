@@ -4,7 +4,7 @@ import { Button } from "@/app/_components/ui/button";
 import { Separator } from "@/app/_components/ui/separator";
 import { ChevronLeft } from "lucide-react";
 import ServiceItem from "@/app/_components/service-item";
-import PhoneItem from "@/app/_components/ui/phone-item";
+import PhoneItem from "@/app/_components/phone-item";
 import Footer from "@/app/_components/footer";
 import Link from "next/link";
 import Image from "next/image";

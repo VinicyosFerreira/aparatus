@@ -1,23 +1,26 @@
 "use client";
-import { Barbershop, BarbershopService } from "../generated/prisma/client";
+
+import Image from "next/image";
+import { BarbershopService, Barbershop } from "../generated/prisma/client";
+import { Button } from "./ui/button";
 import {
   Sheet,
-  SheetTrigger,
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetTrigger,
 } from "./ui/sheet";
 import { Calendar } from "./ui/calendar";
-import { Button } from "./ui/button";
-import Image from "next/image";
-import { createBooking } from "../_actions/create-booking";
-import { useState } from "react";
-import { useAction } from "next-safe-action/hooks";
 import { Separator } from "./ui/separator";
+import { useState } from "react";
 import { ptBR } from "date-fns/locale";
+import { useAction } from "next-safe-action/hooks";
+import { createBooking } from "../_actions/create-booking";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { getDateAvailableTimeSlots } from "../_actions/get-date-available-time-slots";
+import { createBookingCheckoutSession } from "../_actions/create-booking-checkout-session";
+import { loadStripe } from "@stripe/stripe-js";
 
 interface ServiceItemProps {
   service: BarbershopService & {
@@ -28,16 +31,19 @@ interface ServiceItemProps {
 const ServiceItem = ({ service }: ServiceItemProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTime, setSelectedTime] = useState<string | undefined>();
-  const [sheetIsOpen, setSheetIsOpen] = useState(false);
   const { executeAsync, isPending } = useAction(createBooking);
+  const { executeAsync: executeCreateBookingCheckoutSession } = useAction(
+    createBookingCheckoutSession,
+  );
+  const [sheetIsOpen, setSheetIsOpen] = useState(false);
   const { data: availableTimeSlots } = useQuery({
-    queryKey: ["data-available-time-slots", service.barbershopId, selectedDate],
+    queryKey: ["date-available-time-slots", service.barbershopId, selectedDate],
     queryFn: () =>
       getDateAvailableTimeSlots({
         barbershopId: service.barbershopId,
         date: selectedDate!,
       }),
-    enabled: !!selectedDate,
+    enabled: Boolean(selectedDate),
   });
 
   const handleDateSelect = (date: Date | undefined) => {
@@ -64,34 +70,61 @@ const ServiceItem = ({ service }: ServiceItemProps) => {
   today.setHours(0, 0, 0, 0);
 
   const handleConfirm = async () => {
+    if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+      toast.error("Erro ao criar checkout session");
+      return;
+    }
     if (!selectedTime || !selectedDate) {
       return;
     }
-    const timeSplitted = selectedTime.split(":");
+    const timeSplitted = selectedTime.split(":"); // [10, 00]
     const hours = timeSplitted[0];
     const minutes = timeSplitted[1];
     const date = new Date(selectedDate);
     date.setHours(Number(hours), Number(minutes));
-
-    const result = await executeAsync({
+    const checkoutSessionResult = await executeCreateBookingCheckoutSession({
       serviceId: service.id,
       date,
     });
-
-    if (result.serverError || result.validationErrors) {
-      toast.error(result.validationErrors?._errors?.[0]);
+    if (
+      checkoutSessionResult.serverError ||
+      checkoutSessionResult.validationErrors
+    ) {
+      toast.error(checkoutSessionResult.validationErrors?._errors?.[0]);
       return;
     }
+    const stripe = await loadStripe(
+      process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
+    );
+    if (!stripe || !checkoutSessionResult.data?.id) {
+      toast.error("Erro ao carregar Stripe");
+      return;
+    }
+    await stripe.redirectToCheckout({
+      sessionId: checkoutSessionResult.data.id,
+    });
+    // // 10:00
+    // if (!selectedTime || !selectedDate) {
+    //   return;
+    // }
 
-    toast.success("Agendamento criado com sucesso");
-    setSelectedDate(undefined);
-    setSelectedTime(undefined);
-    setSheetIsOpen(false);
+    // const result = await executeAsync({
+    //   serviceId: service.id,
+    //   date,
+    // });
+    // if (result.serverError || result.validationErrors) {
+    //   toast.error(result.validationErrors?._errors?.[0]);
+    //   return;
+    // }
+    // toast.success("Agendamento criado com sucesso!");
+    // setSelectedDate(undefined);
+    // setSelectedTime(undefined);
+    // setSheetIsOpen(false);
   };
 
   return (
     <Sheet open={sheetIsOpen} onOpenChange={setSheetIsOpen}>
-      <div className="border-border bg-muted flex items-center justify-center gap-3 rounded-2xl border border-solid p-3">
+      <div className="border-border bg-card flex items-center justify-center gap-3 rounded-2xl border border-solid p-3">
         <div className="relative size-[110px] shrink-0 overflow-hidden rounded-[10px]">
           <Image
             src={service.imageUrl}
@@ -100,9 +133,10 @@ const ServiceItem = ({ service }: ServiceItemProps) => {
             className="object-cover"
           />
         </div>
+
         <div className="flex grow basis-0 flex-row items-center self-stretch">
           <div className="relative flex h-full min-h-0 min-w-0 grow basis-0 flex-col items-start justify-between">
-            <div className="flex h-auto w-full flex-col items-start gap-1 text-sm leading-[1.4]">
+            <div className="flex h-[67.5px] w-full flex-col items-start gap-1 text-sm leading-[1.4]">
               <p className="text-card-foreground w-full font-bold">
                 {service.name}
               </p>
@@ -144,7 +178,7 @@ const ServiceItem = ({ service }: ServiceItemProps) => {
             <>
               <Separator />
 
-              <div className="flex min-h-max gap-3 overflow-x-auto px-5 [&::-webkit-scrollbar]:hidden">
+              <div className="flex gap-3 min-h-max overflow-x-auto px-5 [&::-webkit-scrollbar]:hidden">
                 {availableTimeSlots?.data?.map((time) => (
                   <Button
                     key={time}
@@ -156,6 +190,8 @@ const ServiceItem = ({ service }: ServiceItemProps) => {
                   </Button>
                 ))}
               </div>
+
+              <Separator />
 
               <div className="flex flex-col gap-3 px-5">
                 <div className="border-border bg-card flex w-full flex-col gap-3 rounded-[10px] border border-solid p-3">
