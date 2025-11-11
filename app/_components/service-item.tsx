@@ -1,7 +1,18 @@
+"use client";
 import { Barbershop, BarbershopService } from "../generated/prisma/client";
-import { Sheet, SheetTrigger } from "./ui/sheet";
+import {
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "./ui/sheet";
+import { Calendar } from "./ui/calendar";
 import { Button } from "./ui/button";
 import Image from "next/image";
+import { useState } from "react";
+import { Separator } from "./ui/separator";
+import { ptBR } from "date-fns/locale";
 
 interface ServiceItemProps {
   service: BarbershopService & {
@@ -10,10 +21,52 @@ interface ServiceItemProps {
 }
 
 const ServiceItem = ({ service }: ServiceItemProps) => {
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+  const [selectedTime, setSelectedTime] = useState<string | undefined>();
   const priceInReais = (service.priceInCents / 100).toLocaleString("pt-BR", {
     style: "currency",
     currency: "BRL",
   });
+
+  const priceInReaisInteger = Math.floor(service.priceInCents / 100);
+
+  const TIME_SLOTS = [
+    "09:00",
+    "09:30",
+    "10:00",
+    "10:30",
+    "11:00",
+    "11:30",
+    "12:00",
+    "12:30",
+    "13:00",
+    "13:30",
+    "14:00",
+    "14:30",
+    "15:00",
+    "15:30",
+    "16:00",
+    "16:30",
+    "17:00",
+    "17:30",
+    "18:00",
+  ];
+
+  const formattedDate = selectedDate
+    ? selectedDate.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "short",
+      })
+    : "";
+
+  const handleDateSelect = (date: Date | undefined) => {
+    setSelectedDate(date);
+  };
+
+  const isConfirmDisabled = !selectedDate || !selectedTime;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   return (
     <Sheet>
@@ -48,6 +101,83 @@ const ServiceItem = ({ service }: ServiceItemProps) => {
           </div>
         </div>
       </div>
+
+      <SheetContent className="w-[370px] overflow-y-auto p-0">
+        <div className="flex h-full flex-col gap-6">
+          <SheetHeader className="px-5 pt-6">
+            <SheetTitle className="text-lg font-bold">Fazer Reserva</SheetTitle>
+          </SheetHeader>
+
+          <div className="flex flex-col gap-4 px-5">
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={handleDateSelect}
+              disabled={{ before: today }}
+              className="w-full p-0"
+              locale={ptBR}
+            />
+          </div>
+
+          {selectedDate && (
+            <>
+              <Separator />
+
+              <div className="flex min-h-max gap-3 overflow-x-auto px-5 [&::-webkit-scrollbar]:hidden">
+                {TIME_SLOTS.map((time) => (
+                  <Button
+                    key={time}
+                    variant={selectedTime === time ? "default" : "outline"}
+                    className="shrink-0 rounded-full px-4 py-2"
+                    onClick={() => setSelectedTime(time)}
+                  >
+                    {time}
+                  </Button>
+                ))}
+              </div>
+
+              <div className="flex flex-col gap-3 px-5">
+                <div className="border-border bg-card flex w-full flex-col gap-3 rounded-[10px] border border-solid p-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-card-foreground text-base font-bold">
+                      {service.name}
+                    </p>
+                    <p className="text-card-foreground text-sm font-bold">
+                      R${priceInReaisInteger},00
+                    </p>
+                  </div>
+
+                  <div className="text-muted-foreground flex items-center justify-between text-sm">
+                    <p>Data</p>
+                    <p>{formattedDate}</p>
+                  </div>
+
+                  {selectedTime && (
+                    <div className="text-muted-foreground flex items-center justify-between text-sm">
+                      <p>Horário</p>
+                      <p>{selectedTime}</p>
+                    </div>
+                  )}
+
+                  <div className="text-muted-foreground flex items-center justify-between text-sm">
+                    <p>Barbearia</p>
+                    <p>{service.barbershop.name}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="px-5 pb-6">
+                <Button
+                  className="w-full rounded-full"
+                  disabled={isConfirmDisabled}
+                >
+                  Confirmar
+                </Button>
+              </div>
+            </>
+          )}
+        </div>
+      </SheetContent>
     </Sheet>
   );
 };
