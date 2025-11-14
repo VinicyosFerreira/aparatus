@@ -41,7 +41,7 @@ const BarbershopsPage = async ({ searchParams }: PageProps<"/barbershops">) => {
             </h2>
 
             {barbershops.length > 0 ? (
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-4 lg:grid lg:grid-cols-3">
                 {barbershops.map((barbershop) => (
                   <BarbershopItem key={barbershop.id} barbershop={barbershop} />
                 ))}

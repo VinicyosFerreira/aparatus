@@ -122,6 +122,7 @@ export function ServiceItem({ service }: ServiceItemProps) {
     // setSheetIsOpen(false);
   };
 
+
   return (
     <Sheet open={sheetIsOpen} onOpenChange={setSheetIsOpen}>
       <div className="border-border bg-card flex items-center justify-center gap-3 rounded-2xl border border-solid p-3">
@@ -178,7 +179,7 @@ export function ServiceItem({ service }: ServiceItemProps) {
             <>
               <Separator />
 
-              <div className="flex gap-2 min-h-max overflow-x-auto px-5 [&::-webkit-scrollbar]:hidden">
+              <div className="flex gap-2 min-h-max overflow-x-auto px-5 [&::-webkit-scrollbar]:hidden lg:grid lg:grid-cols-4">
                 {availableTimeSlots?.data?.map((time) => (
                   <Button
                     key={time}

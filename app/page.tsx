@@ -36,7 +36,7 @@ export default async function Home() {
           src={banner}
           sizes="100vw"
           alt="Agende agora"
-          className="h-auto w-full"
+          className="h-auto w-full object-fill lg:h-[1000px]"
         />
         {/* <PageSection>
           <PageSectionTitle>Agendamentos</PageSectionTitle>

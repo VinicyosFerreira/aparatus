@@ -20,7 +20,7 @@ export const PageSectionScroller = ({
   children: React.ReactNode;
 }) => {
   return (
-    <div className="flex gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden">
+    <div className="flex gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden lg:grid lg:grid-cols-3">
       {children}
     </div>
   );
