@@ -60,7 +60,15 @@ export const createBookingCheckoutSession = actionClient
             currency: "brl",
             unit_amount: service.priceInCents,
             product_data: {
-              name: `${service.barbershop.name} - ${service.name} em ${format(date, "dd/MM/yyyy HH:mm")}`,
+              name: `${service.barbershop.name} - ${service.name} em ${new Intl.DateTimeFormat(
+                "pt-BR",
+                {
+                  timeZone: "America/Sao_Paulo",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: false,
+                },
+              ).format(date)}`,
               description: service.description,
               images: [service.imageUrl],
             },

@@ -56,8 +56,14 @@ export const getDateAvailableTimeSlots = actionClient
       },
     });
     const occupiedSlots = bookings.map((booking) =>
-      format(booking.date, "HH:mm"),
+      new Intl.DateTimeFormat("pt-BR", {
+        timeZone: "America/Sao_Paulo",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }).format(booking.date),
     );
+  
     const availableTimeSlots = TIME_SLOTS.filter(
       (slot) => !occupiedSlots.includes(slot),
     );

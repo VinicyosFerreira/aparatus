@@ -45,7 +45,6 @@ export function ServiceItem({ service }: ServiceItemProps) {
       }),
     enabled: Boolean(selectedDate),
   });
-  console.log("availableTimeSlots", availableTimeSlots);
 
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
@@ -78,10 +77,11 @@ export function ServiceItem({ service }: ServiceItemProps) {
     if (!selectedTime || !selectedDate) {
       return;
     }
-    const timeSplitted = selectedTime.split(":"); 
+    const timeSplitted = selectedTime.split(":");
     const hours = timeSplitted[0];
     const minutes = timeSplitted[1];
     const date = new Date(selectedDate);
+
     date.setHours(Number(hours), Number(minutes), 0, 0);
     const checkoutSessionResult = await executeCreateBookingCheckoutSession({
       serviceId: service.id,
@@ -104,6 +104,7 @@ export function ServiceItem({ service }: ServiceItemProps) {
     await stripe.redirectToCheckout({
       sessionId: checkoutSessionResult.data.id,
     });
+
     // // 10:00
     // if (!selectedTime || !selectedDate) {
     //   return;
