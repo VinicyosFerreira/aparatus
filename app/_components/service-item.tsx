@@ -45,6 +45,7 @@ export function ServiceItem({ service }: ServiceItemProps) {
       }),
     enabled: Boolean(selectedDate),
   });
+  console.log("availableTimeSlots", availableTimeSlots);
 
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
@@ -77,11 +78,11 @@ export function ServiceItem({ service }: ServiceItemProps) {
     if (!selectedTime || !selectedDate) {
       return;
     }
-    const timeSplitted = selectedTime.split(":"); // [10, 00]
+    const timeSplitted = selectedTime.split(":"); 
     const hours = timeSplitted[0];
     const minutes = timeSplitted[1];
     const date = new Date(selectedDate);
-    date.setHours(Number(hours), Number(minutes));
+    date.setHours(Number(hours), Number(minutes), 0, 0);
     const checkoutSessionResult = await executeCreateBookingCheckoutSession({
       serviceId: service.id,
       date,
@@ -121,7 +122,6 @@ export function ServiceItem({ service }: ServiceItemProps) {
     // setSelectedTime(undefined);
     // setSheetIsOpen(false);
   };
-
 
   return (
     <Sheet open={sheetIsOpen} onOpenChange={setSheetIsOpen}>
@@ -179,7 +179,7 @@ export function ServiceItem({ service }: ServiceItemProps) {
             <>
               <Separator />
 
-              <div className="flex gap-2 min-h-max overflow-x-auto px-5 [&::-webkit-scrollbar]:hidden lg:grid lg:grid-cols-4">
+              <div className="flex min-h-max gap-2 overflow-x-auto px-5 lg:grid lg:grid-cols-4 [&::-webkit-scrollbar]:hidden">
                 {availableTimeSlots?.data?.map((time) => (
                   <Button
                     key={time}
