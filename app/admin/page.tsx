@@ -17,7 +17,6 @@ const Admin = async () => {
     redirect("/");
   }
 
-
   const myBarbershops = await prisma.barbershop.findMany({
     where: {
       ownerId: userId,
@@ -27,16 +26,15 @@ const Admin = async () => {
     },
   });
 
-
   return (
-    <main className="flex min-h-screen flex-col">
+    <main className="flex h-screen flex-col overflow-hidden">
       <Header />
       {myBarbershops.length === 0 ? (
         <div className="flex-1">
           <EmptyBarbershopState />
         </div>
       ) : (
-        <div className="flex h-full flex-1">
+        <div className="flex h-full">
           <SidebarProvider>
             <AdminSidebar barbershops={myBarbershops} />
           </SidebarProvider>

@@ -17,6 +17,7 @@ import { Barbershop } from "@/app/generated/prisma/client";
 import { toast } from "sonner";
 import { useAction } from "next-safe-action/hooks";
 import { createBarbershopService } from "@/app/_actions/create-service";
+import { editBarbershopService } from "@/app/_actions/edit-service";
 import { BarbershopService } from "@/app/generated/prisma/client";
 import {
   Card,
@@ -54,6 +55,7 @@ const ServicesTab = ({ barbershop, barbershopServices }: ServicesTabProps) => {
     {
       onSuccess: () => {
         toast.success("Serviço cadastrado com sucesso!");
+        form.reset();
       },
       onError: ({ error }) => {
         toast.error(
@@ -63,22 +65,26 @@ const ServicesTab = ({ barbershop, barbershopServices }: ServicesTabProps) => {
     },
   );
 
+  const { execute: executeEditService } = useAction(editBarbershopService, {
+    onSuccess: () => {
+      toast.success("Serviço editado com sucesso!");
+      setIsEditing(false);
+      form.reset();
+    },
+    onError: ({ error }) => {
+      toast.error(
+        error.serverError || "Erro ao editar serviço. Tente novamente.",
+      );
+    },
+  });
+
   const handleSubmit = (data: FormInput) => {
     if (!isEditing) {
       executeCreateService(data);
     } else {
-      console.log("Edição de serviço não implementada ainda");
-      // TODO: implementar edição de serviços
-    } 
+      executeEditService(data);
+    }
   };
-
-  const handleEditService = (service: BarbershopService) => {
-    setIsEditing(true);
-    form.setValue("name", service.name);
-    form.setValue("description", service.description);
-    form.setValue("imageUrl", service.imageUrl);
-    form.setValue("price", service.priceInCents / 100);
-  }
 
   const convertPriceToReais = (service: BarbershopService) => {
     const priceInReais = (service.priceInCents / 100).toLocaleString("pt-BR", {
@@ -86,6 +92,17 @@ const ServicesTab = ({ barbershop, barbershopServices }: ServicesTabProps) => {
       currency: "BRL",
     });
     return priceInReais;
+  };
+
+  const handleEditService = (service: BarbershopService) => {
+    setIsEditing(true);
+    form.setValue("name", service.name);
+    form.setValue("description", service.description);
+    form.setValue("imageUrl", service.imageUrl);
+    form.setValue("price", convertPriceToReais(service));
+    form.setValue("id", service.id);
+    form.setValue("barbershopId", service.barbershopId);
+    console.log("Editing service:", service);
   };
 
   return (
@@ -218,7 +235,7 @@ const ServicesTab = ({ barbershop, barbershopServices }: ServicesTabProps) => {
         </Card>
       </div>
 
-      <div className="mb-6">
+      <div>
         <h3 className="mb-4 text-xl font-bold">Serviços Cadastrados</h3>
         <div className="text-muted-foreground text-sm">
           {barbershopServices.length === 0 ? (
@@ -226,8 +243,8 @@ const ServicesTab = ({ barbershop, barbershopServices }: ServicesTabProps) => {
           ) : (
             <ul className="flex flex-col gap-3">
               {barbershopServices.map((service) => (
-                <li key={service.id} className="rounded-md border p-3 flex ">
-                  <div className="flex flex-col gap-1 w-full">
+                <li key={service.id} className="flex rounded-md border p-3">
+                  <div className="flex w-full flex-col gap-1">
                     <h4 className="font-bold">{service.name}</h4>
                     <p className="text-muted-foreground text-sm">
                       {service.description}
