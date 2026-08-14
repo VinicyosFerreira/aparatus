@@ -132,14 +132,14 @@ const AdminSidebar = ({
 
       <SidebarInset>
         <SidebarTrigger />
-        <div className="mt-5">
+        <div className="mt-5 flex-1 min-h-0 overflow-y-auto pb-28">
           {optionSelected === "dashboard" && <div>Dashboard</div>}
 
           {optionSelected === "barbershops" && barbershopSelected && (
             <Tabs defaultValue="resume" className="mx-5">
               <TabsList className="w-full">
                 <TabsTrigger value="babershop">Barbearia</TabsTrigger>
-                <TabsTrigger value="services">Serviços</TabsTrigger>
+                <TabsTrigger value="services">Serviços</TabsTrigger>
                 <TabsTrigger value="bookings">Agendamentos</TabsTrigger>
               </TabsList>
               <TabsContent value="babershop">
