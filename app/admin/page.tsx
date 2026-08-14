@@ -2,9 +2,10 @@ import { auth } from "../../lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import Header from "../_components/header";
-import Footer from "../_components/footer";
 import { prisma } from "@/lib/prisma";
 import EmptyBarbershopState from "../_components/empty-barbershop-state";
+import { SidebarProvider } from "@/app/_components/ui/sidebar";
+import AdminSidebar from "./_components/admin-sidebar";
 
 const Admin = async () => {
   const session = await auth.api.getSession({
@@ -16,23 +17,31 @@ const Admin = async () => {
     redirect("/");
   }
 
+
   const myBarbershops = await prisma.barbershop.findMany({
     where: {
       ownerId: userId,
     },
+    include: {
+      services: true,
+    },
   });
 
+
   return (
-    <main className="flex h-screen flex-col">
+    <main className="flex min-h-screen flex-col">
       <Header />
       {myBarbershops.length === 0 ? (
         <div className="flex-1">
           <EmptyBarbershopState />
         </div>
       ) : (
-        <div className="flex-1">Admin</div>
+        <div className="flex h-full flex-1">
+          <SidebarProvider>
+            <AdminSidebar barbershops={myBarbershops} />
+          </SidebarProvider>
+        </div>
       )}
-      <Footer />
     </main>
   );
 };
