@@ -41,6 +41,7 @@ const FormAddBarbershop = () => {
   const { execute: executeCreateBarbershop, isExecuting } = useAction(
     createBarbershop,
     {
+
       onSuccess: () => {
         toast.success("Barbearia cadastrada com sucesso!");
       },
