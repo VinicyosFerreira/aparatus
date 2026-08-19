@@ -36,21 +36,29 @@ import BookingsTab from "@/app/admin/_components/bookings-tab";
 import FormAddBarbershop from "@/app/_components/form-add-barbershop";
 import { Card, CardContent } from "@/app/_components/ui/card";
 
-type BarbershopWithServices = Prisma.BarbershopGetPayload<{
-  include: { services: true };
+export type BarbershopWithRelations = Prisma.BarbershopGetPayload<{
+  include: {
+    services: true;
+    bookings: {
+      include: {
+        service: true;
+        user: true;
+      };
+    };
+  };
 }>;
 
 const AdminSidebar = ({
   barbershops,
 }: {
-  barbershops: BarbershopWithServices[];
+  barbershops: BarbershopWithRelations[];
 }) => {
   const [optionSelected, setOptionSelected] = useState("dashboard");
   const [barbershopSelectedId, setBarbershopSelectedId] = useState<
     string | null
   >(null);
 
-  const handleBarbershopSelect = (barbershop: BarbershopWithServices) => {
+  const handleBarbershopSelect = (barbershop: BarbershopWithRelations) => {
     setBarbershopSelectedId(barbershop.id);
     setOptionSelected("barbershops");
   };
@@ -152,7 +160,7 @@ const AdminSidebar = ({
                 />
               </TabsContent>
               <TabsContent value="bookings">
-                <BookingsTab barbershop={barbershopSelected} />
+                <BookingsTab barbershop={barbershopSelected} bookings={barbershopSelected.bookings} />
               </TabsContent>
             </Tabs>
           )}

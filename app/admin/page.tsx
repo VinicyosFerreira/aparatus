@@ -23,6 +23,12 @@ const Admin = async () => {
     },
     include: {
       services: true,
+      bookings: {
+        include: {
+          service: true,
+          user: true,
+        },
+      },
     },
   });
 
