@@ -15,3 +15,12 @@ export const barbershopFormSchema = z.object({
     })
     .min(1, { error: "O estilo é obrigatório." }),
 });
+
+// id deve ser obrigatorio e o resto opcional
+export const updateBarbershopFormSchema = barbershopFormSchema
+  .extend({
+    id: z.uuid(),
+  })
+  .omit({ style: true })
+  .partial()
+  .required({ id: true });

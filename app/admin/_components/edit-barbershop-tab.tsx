@@ -6,25 +6,20 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/app/_components/ui/field";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/app/_components/ui/select";
 import { Button } from "@/app/_components/ui/button";
 import { Input } from "@/app/_components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
 import { Textarea } from "@/app/_components/ui/textarea";
 import { z } from "zod";
-import { barbershopFormSchema } from "@/schemas/barbershop";
+import { useAction } from "next-safe-action/hooks";
+import { updateBarbershopFormSchema } from "@/schemas/barbershop";
 import { Barbershop } from "@/app/generated/prisma/client";
 import { Card, CardContent } from "@/app/_components/ui/card";
 import { toast } from "sonner";
+import { editBarbershop } from "@/app/_actions/edit-barbershop";
 
-type useFormType = z.infer<typeof barbershopFormSchema>;
+type useFormType = z.infer<typeof updateBarbershopFormSchema>;
 
 interface EditBarbershopTabProps {
   barbershop: Barbershop;
@@ -32,24 +27,33 @@ interface EditBarbershopTabProps {
 
 const EditBarbershopTab = ({ barbershop }: EditBarbershopTabProps) => {
   const form = useForm<useFormType>({
-    resolver: zodResolver(barbershopFormSchema),
+    resolver: zodResolver(updateBarbershopFormSchema),
     defaultValues: {
+      id: barbershop.id,
       name: barbershop.name || "",
       address: barbershop.address || "",
       description: barbershop.description || "",
       phone: barbershop.phones?.[0] || "",
-      style: "",
+    },
+  });
+
+  const { execute: executeEditBarbershop } = useAction(editBarbershop, {
+    onSuccess: () => {
+      toast.success("Barbearia atualizada com sucesso!");
+    },
+    onError: ({ error }) => {
+      toast.error(
+        error.serverError || "Erro ao atualizar barbearia. Tente novamente.",
+      );
     },
   });
 
   const handleSubmit = (data: useFormType) => {
-    // Apenas simulação de envio conforme regra do projeto
-    console.log("Submit Edit Barbershop Data:", data);
-    toast.success("Barbearia atualizada com sucesso (Simulação)!");
+    executeEditBarbershop(data);
   };
 
   return (
-    <div className="flex my-3 flex-col gap-4">
+    <div className="my-3 flex flex-col gap-4">
       <h2 className="text-xl font-bold">Editar {barbershop.name}</h2>
       <Card>
         <CardContent>
@@ -145,39 +149,11 @@ const EditBarbershopTab = ({ barbershop }: EditBarbershopTabProps) => {
                 )}
               />
             </FieldGroup>
-            <FieldGroup>
-              <Controller
-                name="style"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field>
-                    <FieldLabel>Estilo: </FieldLabel>
-                    <FieldContent>
-                      <Select
-                        name={field.name}
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <SelectTrigger className="border-border w-full">
-                          <SelectValue placeholder="Selecione um estilo" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="classic">Clássico</SelectItem>
-                          <SelectItem value="urban">Urbano</SelectItem>
-                          <SelectItem value="modern">Moderno</SelectItem>
-                          <SelectItem value="premium">Premium</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                      )}
-                    </FieldContent>
-                  </Field>
-                )}
-              />
-            </FieldGroup>
 
-            <Button type="submit" className="mt-3 w-[270px] ml-auto cursor-pointer">
+            <Button
+              type="submit"
+              className="mt-3 ml-auto w-[270px] cursor-pointer"
+            >
               Salvar Alterações
             </Button>
           </form>
