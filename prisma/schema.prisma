@@ -23,6 +23,7 @@ model Barbershop {
   imageUrl    String
   phones      String[]
   ownerId     String?
+  deletedAt   DateTime?           
   services    BarbershopService[]
   bookings    Booking[]
 }
@@ -35,6 +36,7 @@ model BarbershopService {
   barbershopId String
   barbershop   Barbershop @relation(fields: [barbershopId], references: [id])
   bookings     Booking[]
+  isActive     Boolean    @default(true)
   priceInCents Int
 }
 

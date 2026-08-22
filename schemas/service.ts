@@ -10,3 +10,7 @@ export const serviceFormSchema = z.object({
     .positive({ error: "O preço deve ser um número positivo." }),
   barbershopId: z.uuid({ error: "O ID da barbearia é obrigatório." }),
 });
+
+export const deactivateServiceSchema = z.object({
+  serviceId: z.uuid(),
+});

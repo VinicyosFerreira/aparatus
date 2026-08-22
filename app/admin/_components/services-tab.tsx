@@ -19,6 +19,7 @@ import { useAction } from "next-safe-action/hooks";
 import { createBarbershopService } from "@/app/_actions/create-service";
 import { editBarbershopService } from "@/app/_actions/edit-service";
 import { BarbershopService } from "@/app/generated/prisma/client";
+import DeleteServiceModal from "./delete-service-modal";
 import {
   Card,
   CardContent,
@@ -26,7 +27,7 @@ import {
   CardTitle,
 } from "@/app/_components/ui/card";
 import { NumericFormat } from "react-number-format";
-import { PencilIcon, TrashIcon } from "lucide-react";
+import { PencilIcon } from "lucide-react";
 import { useState } from "react";
 
 type FormInput = z.input<typeof serviceFormSchema>;
@@ -39,6 +40,7 @@ interface ServicesTabProps {
 
 const ServicesTab = ({ barbershop, barbershopServices }: ServicesTabProps) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [open, setIsOpen] = useState(false);
   const form = useForm<FormInput, unknown, FormOutput>({
     resolver: zodResolver(serviceFormSchema),
     defaultValues: {
@@ -102,7 +104,6 @@ const ServicesTab = ({ barbershop, barbershopServices }: ServicesTabProps) => {
     form.setValue("price", convertPriceToReais(service));
     form.setValue("id", service.id);
     form.setValue("barbershopId", service.barbershopId);
-    console.log("Editing service:", service);
   };
 
   return (
@@ -243,7 +244,10 @@ const ServicesTab = ({ barbershop, barbershopServices }: ServicesTabProps) => {
           ) : (
             <ul className="flex flex-col gap-3">
               {barbershopServices.map((service) => (
-                <li key={service.id} className="flex rounded-md border p-3">
+                <li
+                  key={service.id}
+                  className={`flex rounded-md border p-3 ${service.isActive ? "" : "bg-muted/50"}`}
+                >
                   <div className="flex w-full flex-col gap-1">
                     <h4 className="font-bold">{service.name}</h4>
                     <p className="text-muted-foreground text-sm">
@@ -255,18 +259,20 @@ const ServicesTab = ({ barbershop, barbershopServices }: ServicesTabProps) => {
                   <div className="flex flex-col gap-1">
                     <Button
                       type="button"
+                      disabled={!service.isActive}
                       className="flex cursor-pointer items-center justify-center"
                       onClick={() => handleEditService(service)}
                     >
                       <PencilIcon className="h-4 w-4" />
                     </Button>
-                    <Button
-                      type="button"
-                      className="bg-destructive hover:bg-destructive/90 flex cursor-pointer items-center justify-center"
-                      // onClick={() => handleDeleteService(service.id)}
-                    >
-                      <TrashIcon className="h-4 w-4" />
-                    </Button>
+                    <DeleteServiceModal
+                      open={open}
+                      setIsOpen={setIsOpen}
+                      service={{
+                        id: service.id,
+                        isActive: service.isActive,
+                      }}
+                    />
                   </div>
                 </li>
               ))}
