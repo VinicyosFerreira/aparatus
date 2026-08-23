@@ -17,7 +17,10 @@ import { updateBarbershopFormSchema } from "@/schemas/barbershop";
 import { Barbershop } from "@/app/generated/prisma/client";
 import { Card, CardContent } from "@/app/_components/ui/card";
 import { toast } from "sonner";
+import { useState } from "react";
 import { editBarbershop } from "@/app/_actions/edit-barbershop";
+import DeactivateBarbershopModal from "./deactivate-barbershop-modal";
+import { Badge } from "@/app/_components/ui/badge";
 
 type useFormType = z.infer<typeof updateBarbershopFormSchema>;
 
@@ -26,6 +29,7 @@ interface EditBarbershopTabProps {
 }
 
 const EditBarbershopTab = ({ barbershop }: EditBarbershopTabProps) => {
+  const [isOpen, setIsOpen] = useState(false);
   const form = useForm<useFormType>({
     resolver: zodResolver(updateBarbershopFormSchema),
     defaultValues: {
@@ -35,6 +39,7 @@ const EditBarbershopTab = ({ barbershop }: EditBarbershopTabProps) => {
       description: barbershop.description || "",
       phone: barbershop.phones?.[0] || "",
     },
+    disabled: !!barbershop.deletedAt,
   });
 
   const { execute: executeEditBarbershop } = useAction(editBarbershop, {
@@ -54,7 +59,14 @@ const EditBarbershopTab = ({ barbershop }: EditBarbershopTabProps) => {
 
   return (
     <div className="my-3 flex flex-col gap-4">
-      <h2 className="text-xl font-bold">Editar {barbershop.name}</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-bold">Editar {barbershop.name}</h2>
+        {barbershop.deletedAt && (
+          <Badge variant="destructive">
+            Barbearia desativada
+          </Badge>
+        )}
+      </div>
       <Card>
         <CardContent>
           <form
@@ -150,12 +162,23 @@ const EditBarbershopTab = ({ barbershop }: EditBarbershopTabProps) => {
               />
             </FieldGroup>
 
-            <Button
-              type="submit"
-              className="mt-3 ml-auto w-[270px] cursor-pointer"
-            >
-              Salvar Alterações
-            </Button>
+            <div className="flex justify-end gap-4">
+              <Button
+                type="submit"
+                className="mt-3 w-[270px] cursor-pointer"
+                disabled={!!barbershop.deletedAt}
+              >
+                Salvar Alterações
+              </Button>
+              <DeactivateBarbershopModal
+                barbershop={{
+                  id: barbershop.id,
+                  deletedAt: barbershop.deletedAt,
+                }}
+                open={isOpen}
+                setIsOpen={setIsOpen}
+              />
+            </div>
           </form>
         </CardContent>
       </Card>

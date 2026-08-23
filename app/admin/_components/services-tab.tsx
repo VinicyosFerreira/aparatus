@@ -29,6 +29,7 @@ import {
 import { NumericFormat } from "react-number-format";
 import { PencilIcon } from "lucide-react";
 import { useState } from "react";
+import { Badge } from "@/app/_components/ui/badge";
 
 type FormInput = z.input<typeof serviceFormSchema>;
 type FormOutput = z.output<typeof serviceFormSchema>;
@@ -50,6 +51,7 @@ const ServicesTab = ({ barbershop, barbershopServices }: ServicesTabProps) => {
       price: 0,
       barbershopId: barbershop.id,
     },
+    disabled: !!barbershop.deletedAt,
   });
 
   const { execute: executeCreateService, isExecuting } = useAction(
@@ -106,12 +108,21 @@ const ServicesTab = ({ barbershop, barbershopServices }: ServicesTabProps) => {
     form.setValue("barbershopId", service.barbershopId);
   };
 
+  console.log(!barbershop.deletedAt);
+
   return (
     <div className="mt-3 flex flex-col gap-6">
       <div>
-        <h2 className="mb-4 text-xl font-bold">
-          Serviços da {barbershop.name}
-        </h2>
+        <div className="flex items-center justify-between">
+          <h2 className="mb-4 text-xl font-bold">
+            Serviços da {barbershop.name}
+          </h2>
+          {!!barbershop.deletedAt && (
+            <Badge variant="destructive">
+              Barbearia desativada
+            </Badge>
+          )}
+        </div>
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">
@@ -227,7 +238,7 @@ const ServicesTab = ({ barbershop, barbershopServices }: ServicesTabProps) => {
               <Button
                 type="submit"
                 className="mt-3 ml-auto w-[270px] cursor-pointer"
-                disabled={isExecuting}
+                disabled={isExecuting || !!barbershop.deletedAt}
               >
                 {isEditing ? "Atualizar Serviço" : "Cadastrar Serviço"}
               </Button>
@@ -246,7 +257,7 @@ const ServicesTab = ({ barbershop, barbershopServices }: ServicesTabProps) => {
               {barbershopServices.map((service) => (
                 <li
                   key={service.id}
-                  className={`flex rounded-md border p-3 ${service.isActive ? "" : "bg-muted/50"}`}
+                  className={`flex rounded-md border p-3 ${!service.isActive || !!barbershop.deletedAt ? "bg-muted/50" : ""}`}
                 >
                   <div className="flex w-full flex-col gap-1">
                     <h4 className="font-bold">{service.name}</h4>
@@ -259,7 +270,7 @@ const ServicesTab = ({ barbershop, barbershopServices }: ServicesTabProps) => {
                   <div className="flex flex-col gap-1">
                     <Button
                       type="button"
-                      disabled={!service.isActive}
+                      disabled={!service.isActive || !!barbershop.deletedAt}
                       className="flex cursor-pointer items-center justify-center"
                       onClick={() => handleEditService(service)}
                     >
@@ -271,6 +282,9 @@ const ServicesTab = ({ barbershop, barbershopServices }: ServicesTabProps) => {
                       service={{
                         id: service.id,
                         isActive: service.isActive,
+                      }}
+                      barbershop={{
+                        deletedAt: barbershop.deletedAt,
                       }}
                     />
                   </div>

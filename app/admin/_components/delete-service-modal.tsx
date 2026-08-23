@@ -17,12 +17,16 @@ interface DeleteServiceModalProps {
     id: string;
     isActive: boolean;
   };
+  barbershop: {
+    deletedAt: Date | null;
+  }
 }
 
 const DeleteServiceModal = ({
   open,
   setIsOpen,
   service,
+  barbershop,
 }: DeleteServiceModalProps) => {
   const { execute: deleteService, isExecuting } = useAction(deactivateService, {
     onSuccess: () => {
@@ -48,7 +52,7 @@ const DeleteServiceModal = ({
       <DialogTrigger asChild>
         <Button
           type="button"
-          disabled={!service.isActive}
+          disabled={!service.isActive || !!barbershop.deletedAt}
           className="bg-destructive hover:bg-destructive/90 flex cursor-pointer items-center justify-center"
           onClick={() => handleDeleteService()}
         >

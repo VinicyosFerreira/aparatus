@@ -24,7 +24,7 @@ const BarbershopPage = async (props: PageProps<"/barbershops/[id]">) => {
     },
   });
 
-  if (!barbershop) {
+  if (!barbershop || !!barbershop.deletedAt) {
     notFound();
   }
 

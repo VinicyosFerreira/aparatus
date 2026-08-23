@@ -27,6 +27,7 @@ export const createBarbershopService = actionClient
       where: {
         id: data.barbershopId,
         ownerId: session.user.id,
+        deletedAt: null,
       },
     });
 

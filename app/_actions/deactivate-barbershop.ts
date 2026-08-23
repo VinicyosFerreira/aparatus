@@ -4,53 +4,46 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { returnValidationErrors } from "next-safe-action";
-import { updateBarbershopFormSchema } from "@/schemas/barbershop";
+import { deactivateBarbershopSchema } from "@/schemas/barbershop";
 import { revalidatePath } from "next/cache";
 
-const inputSchema = updateBarbershopFormSchema;
+const inputSchema = deactivateBarbershopSchema;
 
-export const editBarbershop = actionClient
+export const deactivateBarbershop = actionClient
   .inputSchema(inputSchema)
-  .action(async ({ parsedInput: { ...data } }) => {
+  .action(async ({ parsedInput: { barbershopId } }) => {
     const session = await auth.api.getSession({
       headers: await headers(),
     });
 
-    // validar se o usuário está logado
     if (!session?.user) {
       returnValidationErrors(inputSchema, {
         _errors: ["Unauthorized"],
       });
     }
 
-    const barbershop = await prisma.barbershop.findFirst({
+    const barbershop = await prisma.barbershop.findUnique({
       where: {
-        id: data.id,
+        id: barbershopId,
         ownerId: session.user.id,
-        deletedAt: null,
       },
     });
 
     if (!barbershop) {
       returnValidationErrors(inputSchema, {
-        _errors: [
-          "You don't have a barbershop or not permitted to edit this barbershop",
-        ],
+        _errors: ["Barbershop not found"],
       });
     }
 
-    const updatedBarbershop = await prisma.barbershop.update({
+    const deactivateBarbershop = await prisma.barbershop.update({
       where: {
-        id: data.id,
+        id: barbershopId,
       },
       data: {
-        name: data.name,
-        description: data.description,
-        address: data.address,
-        phones: data.phone?.split(","),
+        deletedAt: new Date(),
       },
     });
 
     revalidatePath("/admin");
-    return updatedBarbershop;
+    return deactivateBarbershop;
   });

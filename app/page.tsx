@@ -15,12 +15,18 @@ import {
 
 export default async function Home() {
   const recommendedBarbershops = await prisma.barbershop.findMany({
+    where: {
+      deletedAt: null,
+    },
     orderBy: {
       name: "asc",
     },
   });
 
   const popularBarbershops = await prisma.barbershop.findMany({
+    where: {
+      deletedAt: null,
+    },
     orderBy: {
       name: "desc",
     },

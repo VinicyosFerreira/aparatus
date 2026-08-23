@@ -39,6 +39,7 @@ export const editBarbershopService = actionClient
       where: {
         id: service.barbershopId,
         ownerId: session.user.id,
+        deletedAt: null,
       },
     });
 

@@ -24,3 +24,7 @@ export const updateBarbershopFormSchema = barbershopFormSchema
   .omit({ style: true })
   .partial()
   .required({ id: true });
+
+export const deactivateBarbershopSchema = z.object({
+  barbershopId: z.uuid(),
+});
