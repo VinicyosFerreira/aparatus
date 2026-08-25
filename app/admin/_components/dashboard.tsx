@@ -1,33 +1,55 @@
-import { Barbershop } from "@/app/generated/prisma/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/_components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/app/_components/ui/card";
+import { getInformationsToDashboard } from "@/app/data_access/dashboard";
 
-interface DashboardProps {
-  barbershop: Barbershop;
-}
+const Dashboard = async () => {
+  const result = await getInformationsToDashboard();
 
-const Dashboard = ({ barbershop }: DashboardProps) => {
   return (
-    <div className="flex flex-col gap-4">
-      <h2 className="text-2xl font-bold">Visão Geral - {barbershop.name}</h2>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="mx-4 flex h-full justify-center items-center flex-col gap-4">
+      <h2 className="text-2xl font-bold">Visão Geral</h2>
+      <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(250px,1fr))] mx-auto w-full max-w-7xl">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Agendamentos Hoje
+              Faturamento mensal
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
+            <div className="text-primary text-2xl font-bold">
+              {result?.montlyRevenue.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })}
+            </div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Receita Mensal
+              Clientes agendados no mês
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">R$ 0,00</div>
+            <div className="text-primary text-2xl font-bold">
+              {result?.countCustomerByMonth}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Serviços mais agendado do mês
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-primary text-2xl font-bold">
+              {result?.mostBookedService}
+            </div>
           </CardContent>
         </Card>
       </div>

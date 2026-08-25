@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import EmptyBarbershopState from "../_components/empty-barbershop-state";
 import { SidebarProvider } from "@/app/_components/ui/sidebar";
 import AdminSidebar from "./_components/admin-sidebar";
+import Dashboard from "./_components/dashboard";
 
 const Admin = async () => {
   const session = await auth.api.getSession({
@@ -42,7 +43,7 @@ const Admin = async () => {
       ) : (
         <div className="flex h-full">
           <SidebarProvider>
-            <AdminSidebar barbershops={myBarbershops} />
+            <AdminSidebar barbershops={myBarbershops} dashboardSlot={<Dashboard />} />
           </SidebarProvider>
         </div>
       )}

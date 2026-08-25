@@ -36,6 +36,7 @@ import BookingsTab from "@/app/admin/_components/bookings-tab";
 import FormAddBarbershop from "@/app/_components/form-add-barbershop";
 import { Card, CardContent } from "@/app/_components/ui/card";
 
+
 export type BarbershopWithRelations = Prisma.BarbershopGetPayload<{
   include: {
     services: true;
@@ -50,8 +51,10 @@ export type BarbershopWithRelations = Prisma.BarbershopGetPayload<{
 
 const AdminSidebar = ({
   barbershops,
+  dashboardSlot,
 }: {
   barbershops: BarbershopWithRelations[];
+  dashboardSlot: React.ReactNode;
 }) => {
   const [optionSelected, setOptionSelected] = useState("dashboard");
   const [barbershopSelectedId, setBarbershopSelectedId] = useState<
@@ -88,7 +91,7 @@ const AdminSidebar = ({
                   onClick={() => setOptionSelected("dashboard")}
                 >
                   <SquareKanban />
-                  <span className="font-semibold">Dashboard</span>
+                  <span className="font-semibold">Dashboard</span>  
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem
@@ -141,7 +144,7 @@ const AdminSidebar = ({
       <SidebarInset>
         <SidebarTrigger />
         <div className="mt-5 flex-1 min-h-0 overflow-y-auto pb-28">
-          {optionSelected === "dashboard" && <div>Dashboard</div>}
+          {optionSelected === "dashboard" && <>{dashboardSlot}</>}
 
           {optionSelected === "barbershops" && barbershopSelected && (
             <Tabs defaultValue="resume" className="mx-5">
