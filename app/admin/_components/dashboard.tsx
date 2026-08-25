@@ -36,7 +36,7 @@ const Dashboard = async () => {
           </CardHeader>
           <CardContent>
             <div className="text-primary text-2xl font-bold">
-              {result?.countCustomerByMonth}
+              {result?.countCustomerMonth}
             </div>
           </CardContent>
         </Card>

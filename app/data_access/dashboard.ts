@@ -35,7 +35,7 @@ export const getInformationsToDashboard = async () => {
       return acc + item.service.priceInCents;
     }, 0);
 
-    const countCustomerByMonth = await prisma.booking.groupBy({
+    const countCustomerMonth = await prisma.booking.groupBy({
       by: ["userId"],
       _count: {
         userId: true,
@@ -73,20 +73,41 @@ export const getInformationsToDashboard = async () => {
       },
     });
 
+
+    if (mostBookedServiceOnMonth.length === 0) {
+      return resultDashboard(
+        montlyRevenueReduce / 100,
+        countCustomerMonth.length,
+        "Não há serviços agendados",
+      );
+    }
+
     const mostBookedService = await prisma.barbershopService.findFirst({
       where: {
         id: mostBookedServiceOnMonth[0].serviceId,
       },
     });
 
-    const result = {
-      montlyRevenue: montlyRevenueReduce / 100,
-      countCustomerByMonth: countCustomerByMonth.length,
-      mostBookedService: mostBookedService?.name,
-    };
+    const result = resultDashboard(
+      montlyRevenueReduce / 100,
+      countCustomerMonth.length,
+      mostBookedService?.name || "Não há serviços agendados",
+    );
 
     return result;
   } catch (error) {
     console.error("Error fetching montlyRevenue:", error);
   }
+};
+
+const resultDashboard = (
+  montlyRevenue: number,
+  countCustomerMonth: number,
+  mostBookedService: string,
+) => {
+  return {
+    montlyRevenue,
+    countCustomerMonth,
+    mostBookedService,
+  };
 };

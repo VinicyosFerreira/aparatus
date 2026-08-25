@@ -108,7 +108,6 @@ const ServicesTab = ({ barbershop, barbershopServices }: ServicesTabProps) => {
     form.setValue("barbershopId", service.barbershopId);
   };
 
-  console.log(!barbershop.deletedAt);
 
   return (
     <div className="mt-3 flex flex-col gap-6">

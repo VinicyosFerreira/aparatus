@@ -27,7 +27,6 @@ const BarbershopsPage = async ({ searchParams }: PageProps<"/barbershops">) => {
       })
     : [];
 
-  console.log("barbershops", barbershops);
 
   return (
     <main>
