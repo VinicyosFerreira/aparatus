@@ -15,12 +15,18 @@ import {
 
 export default async function Home() {
   const recommendedBarbershops = await prisma.barbershop.findMany({
+    where: {
+      deletedAt: null,
+    },
     orderBy: {
       name: "asc",
     },
   });
 
   const popularBarbershops = await prisma.barbershop.findMany({
+    where: {
+      deletedAt: null,
+    },
     orderBy: {
       name: "desc",
     },
@@ -38,15 +44,6 @@ export default async function Home() {
           alt="Agende agora"
           className="h-auto w-full object-fill lg:h-[1000px]"
         />
-        {/* <PageSection>
-          <PageSectionTitle>Agendamentos</PageSectionTitle>
-          <BookingItem
-            serviceName="Corte de cabelo"
-            barbershopName="Barbearia Aparatus"
-            barbershopImage="https://utfs.io/f/5832df58-cfd7-4b3f-b102-42b7e150ced2-16r.png"
-            date={new Date()}
-          />
-        </PageSection> */}
 
         <PageSection>
           <PageSectionTitle>Recomendadas</PageSectionTitle>

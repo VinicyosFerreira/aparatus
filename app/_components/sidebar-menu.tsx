@@ -6,6 +6,7 @@ import {
   HomeIcon,
   LogInIcon,
   LogOutIcon,
+  ShieldCheckIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -82,6 +83,17 @@ const SidebarMenu = () => {
             >
               <CalendarDaysIcon className="size-4" />
               <span className="text-sm font-medium">Agendamentos</span>
+            </Button>
+          </Link>
+        </SheetClose>
+        <SheetClose asChild>
+          <Link href="/admin">
+            <Button
+              variant="ghost"
+              className="h-auto w-full justify-start gap-3 rounded-full px-5 py-3"
+            >
+              <ShieldCheckIcon className="size-4" />
+              <span className="text-sm font-medium">Gestão de Barbearias</span>
             </Button>
           </Link>
         </SheetClose>

@@ -31,7 +31,7 @@ interface ServiceItemProps {
 export function ServiceItem({ service }: ServiceItemProps) {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTime, setSelectedTime] = useState<string | undefined>();
-  const { executeAsync, isPending } = useAction(createBooking);
+  const { isPending } = useAction(createBooking);
   const { executeAsync: executeCreateBookingCheckoutSession } = useAction(
     createBookingCheckoutSession,
   );
@@ -104,24 +104,6 @@ export function ServiceItem({ service }: ServiceItemProps) {
     await stripe.redirectToCheckout({
       sessionId: checkoutSessionResult.data.id,
     });
-
-    // // 10:00
-    // if (!selectedTime || !selectedDate) {
-    //   return;
-    // }
-
-    // const result = await executeAsync({
-    //   serviceId: service.id,
-    //   date,
-    // });
-    // if (result.serverError || result.validationErrors) {
-    //   toast.error(result.validationErrors?._errors?.[0]);
-    //   return;
-    // }
-    // toast.success("Agendamento criado com sucesso!");
-    // setSelectedDate(undefined);
-    // setSelectedTime(undefined);
-    // setSheetIsOpen(false);
   };
 
   return (

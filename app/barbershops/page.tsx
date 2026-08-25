@@ -11,6 +11,7 @@ const BarbershopsPage = async ({ searchParams }: PageProps<"/barbershops">) => {
   const barbershops = search
     ? await prisma.barbershop.findMany({
         where: {
+          deletedAt: null,
           services: {
             some: {
               name: {
@@ -25,6 +26,7 @@ const BarbershopsPage = async ({ searchParams }: PageProps<"/barbershops">) => {
         },
       })
     : [];
+
 
   return (
     <main>

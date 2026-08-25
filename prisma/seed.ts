@@ -1,7 +1,4 @@
-import { PrismaClient } from "../app/generated/prisma/client";
-
-const prisma = new PrismaClient();
-
+import {prisma} from "../lib/prisma";
 async function seedDatabase() {
   try {
     const images = [
