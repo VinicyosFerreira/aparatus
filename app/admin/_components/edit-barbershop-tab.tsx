@@ -62,9 +62,7 @@ const EditBarbershopTab = ({ barbershop }: EditBarbershopTabProps) => {
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">Editar {barbershop.name}</h2>
         {barbershop.deletedAt && (
-          <Badge variant="destructive">
-            Barbearia desativada
-          </Badge>
+          <Badge variant="destructive">Barbearia desativada</Badge>
         )}
       </div>
       <Card>
@@ -162,7 +160,7 @@ const EditBarbershopTab = ({ barbershop }: EditBarbershopTabProps) => {
               />
             </FieldGroup>
 
-            <div className="flex justify-end gap-4">
+            <div className="flex flex-col justify-end gap-1.5 md:flex-row md:gap-4">
               <Button
                 type="submit"
                 className="mt-3 w-[270px] cursor-pointer"
