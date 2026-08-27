@@ -65,6 +65,6 @@ export const deactivateService = actionClient
       },
     });
 
-    revalidatePath("/admin");
+    revalidatePath("/", "layout");
     return deactivatedService;
   });

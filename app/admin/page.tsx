@@ -34,7 +34,7 @@ const Admin = async () => {
   });
 
   return (
-    <main className="flex h-screen flex-col overflow-hidden">
+    <main className={`flex h-screen flex-col ${myBarbershops.length === 0 ? "" : "overflow-hidden"}`}>
       <Header />
       {myBarbershops.length === 0 ? (
         <div className="flex-1">

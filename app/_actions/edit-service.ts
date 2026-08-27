@@ -72,6 +72,6 @@ export const editBarbershopService = actionClient
       },
     });
 
-    revalidatePath("/admin");
+    revalidatePath("/", "layout");
     return updatedService;
   });
