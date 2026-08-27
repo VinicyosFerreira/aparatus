@@ -51,6 +51,6 @@ export const editBarbershop = actionClient
       },
     });
 
-    revalidatePath("/admin");
+    revalidatePath("/", "layout");
     return updatedBarbershop;
   });

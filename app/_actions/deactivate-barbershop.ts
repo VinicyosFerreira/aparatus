@@ -44,6 +44,6 @@ export const deactivateBarbershop = actionClient
       },
     });
 
-    revalidatePath("/admin");
+    revalidatePath("/", "layout");
     return deactivateBarbershop;
   });

@@ -63,6 +63,6 @@ export const createBarbershop = actionClient
       },
     });
 
-    revalidatePath("/admin");
+    revalidatePath("/", "layout");
     return barbershop;
   });
