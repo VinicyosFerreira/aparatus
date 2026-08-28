@@ -16,7 +16,10 @@ export const getInformationsToDashboard = async () => {
     const monthAgoFirstDay = startOfMonth(dateNow);
     const monthAgoLastDay = endOfMonth(dateNow);
 
-    const montlyRevenue = await prisma.booking.findMany({
+    const montlyRevenue = await prisma.booking.aggregate({
+      _sum: {
+        priceAtBookingInCents: true,
+      },
       where: {
         barbershop: {
           ownerId: session.user.id,
@@ -26,14 +29,7 @@ export const getInformationsToDashboard = async () => {
           lte: monthAgoLastDay,
         },
       },
-      include: {
-        service: true,
-      },
     });
-
-    const montlyRevenueReduce = montlyRevenue.reduce((acc, item) => {
-      return acc + item.service.priceInCents;
-    }, 0);
 
     const countCustomerMonth = await prisma.booking.groupBy({
       by: ["userId"],
@@ -73,12 +69,19 @@ export const getInformationsToDashboard = async () => {
       },
     });
 
+    if (!montlyRevenue._sum.priceAtBookingInCents) {
+      return resultDashboard(
+        0,
+        countCustomerMonth.length,
+        "Nenhuma reserva agendada",
+      );
+    }
 
     if (mostBookedServiceOnMonth.length === 0) {
       return resultDashboard(
-        montlyRevenueReduce / 100,
+        montlyRevenue._sum.priceAtBookingInCents / 100,
         countCustomerMonth.length,
-        "Não há serviços agendados",
+        "Nenhuma reserva agendada",
       );
     }
 
@@ -89,9 +92,9 @@ export const getInformationsToDashboard = async () => {
     });
 
     const result = resultDashboard(
-      montlyRevenueReduce / 100,
+      montlyRevenue._sum.priceAtBookingInCents / 100,
       countCustomerMonth.length,
-      mostBookedService?.name || "Não há serviços agendados",
+      mostBookedService?.name || "Nenhuma reserva agendada",
     );
 
     return result;

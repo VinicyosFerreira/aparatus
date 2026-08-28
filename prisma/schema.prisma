@@ -45,6 +45,7 @@ model Booking {
   serviceId      String
   barbershopId   String
   barbershop     Barbershop        @relation(fields: [barbershopId], references: [id])
+  priceAtBookingInCents Int?
   service        BarbershopService @relation(fields: [serviceId], references: [id])
   userId         String
   user           User              @relation(fields: [userId], references: [id])

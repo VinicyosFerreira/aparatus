@@ -49,6 +49,7 @@ export const createBooking = actionClient
       data: {
         serviceId,
         date,
+        priceAtBookingInCents: service.priceInCents,
         userId: session.user.id,
         barbershopId: service.barbershopId,
       },
