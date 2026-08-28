@@ -35,7 +35,7 @@ interface BookingItemProps {
     id: string;
     date: Date;
     cancelled: boolean | null;
-    priceAtBookingInCents: number;
+    priceAtBookingInCents: number | null;
     service: {
       name: string;
       priceInCents: number;
@@ -177,7 +177,7 @@ const BookingItem = ({ booking }: BookingItemProps) => {
                 {Intl.NumberFormat("pt-BR", {
                   style: "currency",
                   currency: "BRL",
-                }).format(booking.priceAtBookingInCents / 100)}
+                }).format(booking.priceAtBookingInCents ?? 0 / 100)}
               </p>
             </div>
             <div className="text-muted-foreground flex items-center justify-between text-sm">
